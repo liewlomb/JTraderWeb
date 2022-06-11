@@ -1,27 +1,22 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
 from logic.buying_recovery import *
 from logic.stock_price import *
 from logic.set100_above_ema import *
 from logic.set100_daily_change import *
 
+
+
 def tiles():
     st.header("Visualization")
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        menu_1 = st.button('Buying Recovery')
-    with col2:
-        menu_2 = st.button('SET100 Above EMA')
-    with col3:
-        menu_3 = st.button('SET100 Change(%)')
-    with col4:
-        menu_4 = st.button('Stock Price Trend')
+    type = option_menu("Menu",['Buying Recovery','SET100 Above EMA','SET100 Change(%)','Stock Price Trend'],
+                    icons=['','','',''],orientation='horizontal')
 
-    if menu_1 == True:
-        buying_recovery() 
-    elif menu_2:
+    if type == 'Buying Recovery':
+        buying_recovery()
+    elif type == 'SET100 Above EMA':
         above_ema()
-    elif menu_3:
+    elif type == 'SET100 Change(%)':
         set100_change()
-    elif menu_4:
+    elif type == 'Stock Price Trend':
         stock_price_visualize()

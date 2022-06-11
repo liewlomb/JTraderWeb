@@ -1,16 +1,13 @@
 import streamlit as st
 import plotly_express as px
 import pandas as pd
-import yfinance as yf
 from datetime import datetime
 import requests
 
-def call_api(quote,startDate,endDate):
-    response = requests.get('http://127.0.0.1:8000/stockprice',params={'quote': quote,'startDate': startDate,'endDate': endDate})
+def call_api(date):
+    response = requests.get('http://127.0.0.1:8000/dailychange',params={'date': date})
     result = response.text
     df = pd.read_json(result, orient ='index')
-    df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
-    st.dataframe(df)
     return df
 
 def set100_change():
@@ -19,9 +16,24 @@ def set100_change():
     
     with st.form(key='visualizeform'):
         #Date Select
-        startDate = st.date_input("Date", value=pd.to_datetime("today", format="%Y-%m-%d"))
-        endDate = st.date_input("End Date", value=pd.to_datetime("today", format="%Y-%m-%d"))
+        date = st.date_input("Date", value=pd.to_datetime("today", format="%Y-%m-%d"))
         submit_visualize = st.form_submit_button(label='Visualize')
     
-        if submit_visualize:
-            result = call_api('^SET.BK',startDate,endDate)        
+    if submit_visualize:
+        result = call_api(date)
+        plot_data = result.sort_values(by='percentChange')
+        fig_daily_percent_change = px.bar(
+            plot_data,
+            x = 'Quote',
+            y = 'percentChange',
+            color = 'closeDirection',
+            color_discrete_sequence=['#E45756','#EECA3B','#54A24B'],
+            orientation = 'v',
+            title = '<b>SET100 Daily Percentage Change: </b>'+str(date),
+            template ='plotly_white'
+        )
+        st.plotly_chart(fig_daily_percent_change)
+        st.dataframe(result)
+        csv = result.to_csv().encode('utf-8')
+        st.download_button(label='Export to CSV',data=csv,file_name='SET100_Daily_Percantage_Change('+str(date)+').csv')
+            
