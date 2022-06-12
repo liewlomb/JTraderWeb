@@ -7,7 +7,6 @@ import talib as ta
 def above_ema(emaLength,beginDate,endDate):
     #set variable
     startDate = beginDate
-    #startDate = startDate.strftime("%Y-%m-%d")
     quotes = pd.read_csv('/home/liewlom/Desktop/JTrader/Data-batch/JTraderAPI/set100/set100_q1_2022.csv')
     above=0
     

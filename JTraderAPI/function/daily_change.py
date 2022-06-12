@@ -1,5 +1,4 @@
 import yfinance as yf
-import json
 from datetime import datetime
 from datetime import timedelta
 import pandas as pd
