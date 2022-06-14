@@ -1,6 +1,6 @@
 import yfinance as yf
 
-test = {}
+result = {}
 date = ['2022-06-08','2022-06-09','2022-06-10']
 emaLength = '5'
 for i in range(len(date)):
@@ -11,6 +11,6 @@ for i in range(len(date)):
 
     setclose = setclose.iloc[0]
 
-    result = {i:{'date':date[i],'SET Close Price': setclose,'Above EMA('+emaLength+')': 0}}
-    test.update(result)
-print(test)
+    genDict = {i:{'date':date[i],'SET Close Price': setclose,'Above EMA('+emaLength+')': 0}}
+    result.update(genDict)
+print(result)

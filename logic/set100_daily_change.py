@@ -32,7 +32,16 @@ def set100_change():
             title = '<b>SET100 Daily Percentage Change: </b>'+str(date),
             template ='plotly_white'
         )
-        st.plotly_chart(fig_daily_percent_change)
+        config = {
+            'toImageButtonOptions': {
+                'format': 'png',
+                'filename': 'SET100_Daily_Percantage_Change('+str(date)+')',
+                'height': 600,
+                'width': 900,
+                'scale':6
+                }
+            }
+        st.plotly_chart(fig_daily_percent_change, use_container_width = False,config = config)
         st.dataframe(result)
         csv = result.to_csv().encode('utf-8')
         st.download_button(label='Export to CSV',data=csv,file_name='SET100_Daily_Percantage_Change('+str(date)+').csv')
