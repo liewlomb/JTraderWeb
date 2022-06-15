@@ -1,9 +1,5 @@
 import yfinance as yf
-from datetime import datetime
-from datetime import timedelta
 import pandas as pd
-import talib as ta
-import numpy as np
 
 def construct_month(month):
     if month == 1:
@@ -90,15 +86,6 @@ def buying_recovery(endDate):
         bm = construct_month(res['beginMonth'])
         em = construct_month(res['endMonth'])
             
-        tmp = {quote:{'Begin Month' : bm,'%Change '+bm: percent_begin,'End Month' : em,'%Change '+em: percent_end}}
+        tmp = {quote:{'Selected Date': endDate,'Begin Month' : bm,'%Change '+bm: float('{:.2f}'.format(percent_begin)),'End Month' : em,'%Change '+em: float('{:.2f}'.format(percent_end))}}
         result.update(tmp)
     return result
-    
-
-
-#   Unit Test
-endDate = '2022-06-15'
-
-print(buying_recovery(endDate))
-
-

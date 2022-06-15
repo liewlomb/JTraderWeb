@@ -3,6 +3,7 @@ from requests import request
 from function.stock_price_yahoo import *
 from function.daily_change import *
 from function.above_ema import *
+from function.buying_recovery import *
 
 app = FastAPI()
 
@@ -19,4 +20,9 @@ async def dailychange(date:str):
 @app.get("/aboveema")
 async def aboveema(emaLength:str,beginDate:str,endDate:str):
     res = above_ema(emaLength,beginDate,endDate)
+    return res
+
+@app.get("/buyingRecovery")
+async def buyingRecovery(endDate:str):
+    res = buying_recovery(endDate)
     return res

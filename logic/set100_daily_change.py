@@ -36,8 +36,8 @@ def set100_change():
             'toImageButtonOptions': {
                 'format': 'png',
                 'filename': 'SET100_Daily_Percantage_Change('+str(date)+')',
-                'height': 600,
-                'width': 900,
+                'height': 500,
+                'width': 800,
                 'scale':6
                 }
             }
