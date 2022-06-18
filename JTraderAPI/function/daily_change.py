@@ -35,7 +35,7 @@ def daily_change(date):
         elif pc < 0:
             change = 'Decrease' 
 
-        result = {i+1:{'Quote': quote,'startDate': startDate,'close: '+startDate: x,'endDate': date,'close: '+endDate: y,'closeDirection': change,'percentChange': pc}}
+        result = {i+1:{'Quote': quote,'startDate': startDate,'close: '+startDate: x,'endDate': date,'close: '+endDate: y,'closeDirection': change,'percentChange': float('{:.2f}'.format(pc))}}
         tmp.update(result)
         
     return tmp

@@ -23,6 +23,6 @@ async def aboveema(emaLength:str,beginDate:str,endDate:str):
     return res
 
 @app.get("/buyingRecovery")
-async def buyingRecovery(endDate:str):
-    res = buying_recovery(endDate)
+async def buyingRecovery(endDate:str,setRange:str):
+    res = buying_recovery(endDate,setRange)
     return res
