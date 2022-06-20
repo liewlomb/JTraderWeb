@@ -10,8 +10,15 @@ def daily_change(date):
         quote = df.iloc[i]['Quote']
         quote = quote.upper()
         quote = quote.strip()
-        startDate = pd.to_datetime(date) - timedelta(days=1)
-        startDate = startDate.strftime("%Y-%m-%d")
+        dayCheck = pd.Timestamp(date)
+
+        if dayCheck.dayofweek == 0:
+            startDate = pd.to_datetime(date) - timedelta(days=3)
+            startDate = startDate.strftime("%Y-%m-%d")
+        else:
+            startDate = pd.to_datetime(date) - timedelta(days=1)
+            startDate = startDate.strftime("%Y-%m-%d")
+        
         endDate = date
         
         stock_price = yf.download(quote+'.bk', start = startDate, stop = endDate)

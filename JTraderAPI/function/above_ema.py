@@ -10,7 +10,7 @@ def loop_create_dict(emaLength,startDate,endDate):
     setclose = yf.download('^SET.BK', start = startDate, stop = endDate)
     setclose = setclose.loc[startDate:endDate]
     setclose.reset_index(inplace=True)
-    
+
     for i in range(len(setclose)):
         date = setclose['Date'][i].strftime("%Y-%m-%d")
         close = setclose['Close'][i]
@@ -30,7 +30,6 @@ def above_ema(emaLength,beginDate,endDate):
         quote = quote.strip()
         # Get Stock Data
         startDate = pd.to_datetime(beginDate) - timedelta(days=365)
-        startDate = startDate.strftime("%Y-%m-%d")
         stock_price = yf.download(quote+'.bk', start = startDate, stop = endDate)
         stock_price.reset_index(inplace=True)
         df = stock_price['Close']

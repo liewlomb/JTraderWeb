@@ -1,66 +1,43 @@
-import yfinance as yf
-import pandas as pd
-import talib as ta
-from datetime import timedelta
-import numpy as np
+import streamlit as st
+import streamlit_authenticator as stauth
+from page.home_page import *
 
-def loop_create_dict(emaLength,startDate,endDate):
-    result={}
-    setclose = yf.download('^SET.BK', start = startDate, stop = endDate)
-    setclose = setclose.loc[startDate:endDate]
-    setclose.reset_index(inplace=True)
-    
-    for i in range(len(setclose)):
-        date = setclose['Date'][i].strftime("%Y-%m-%d")
-        close = setclose['Close'][i]
-        genDict = {date:{'SET Close Price': close,'Above EMA('+str(emaLength)+')': 0}}
-        result.update(genDict)
-    return(result)
+st.set_page_config(
+   page_title="JTrader: The Journey of Trader"
+)
 
-def above_ema(emaLength,beginDate,endDate):
-    # Get SET100
-    quotes = pd.read_csv('/home/liewlom/Desktop/JTrader/Data-batch/JTraderAPI/set100/set100_q1_2022.csv')
-    # Get Data Dict
-    res = loop_create_dict(emaLength,beginDate,endDate)
-    for i in range(len(quotes)):
-        quote = quotes.iloc[i]['Quote']
-        quote = quote.upper()
-        quote = quote.strip()
-        # Get Stock Data
-        startDate = pd.to_datetime(beginDate) - timedelta(days=365)
-        startDate = startDate.strftime("%Y-%m-%d")
-        stock_price = yf.download(quote+'.bk', start = startDate, stop = endDate)
-        stock_price.reset_index(inplace=True)
-        df = stock_price['Close']
+names = ['John Smith','Rebecca Briggs']
+usernames = ['jsmith','rbriggs']
+passwords = ['123','456']
 
-        # Get EMA
-        ema = ta.EMA(df,int(emaLength))
-        ema = pd.DataFrame(ema)
-        ema = ema.rename(columns={0:"EMA Value"})
+hashed_passwords = stauth.Hasher(passwords).generate()
+authenticator = stauth.Authenticate(names,usernames,hashed_passwords,
+    'some_cookie_name','some_signature_key',cookie_expiry_days=30)
 
-        merge_df = stock_price[['Date','Close']]
-        merge_df = pd.concat([merge_df,ema], axis="columns")
-        merge_df = merge_df.set_index('Date')
-        
-        filter_df = merge_df.loc[beginDate:endDate]
-        filter_df.reset_index(inplace=True)
-        
-        compare = np.where(filter_df['Close'] > filter_df['EMA Value'], 'Above','Under')
+col1, col2 = st.columns(2)
 
-        filter_df['Direction'] = compare
-        
-        # Update Dict
-        for i in range(len(filter_df)):
-            date = filter_df['Date'][i].strftime("%Y-%m-%d")
-            dir = filter_df.loc[filter_df['Date'] == date, 'Direction'].iloc[0]
-            if dir == 'Above':
-                x = res[date]['Above EMA('+str(emaLength)+')']
-                x = x+1
-                res[date]['Above EMA('+str(emaLength)+')'] = x
-    return res
-
-beginDate = '2022-05-30'
-endDate = '2022-06-07'
-emaLength = 5
-test = above_ema(emaLength,beginDate,endDate)
-print(test)
+with col1:
+    name, authentication_status, username = authenticator.login('Login to JTrader','main')
+    if authentication_status == False:
+        st.error('Username/password is incorrect')
+        with col2:
+            with st.form(key='Register'):
+                st.subheader("Register to JTrader")
+                RegUserName = st.text_input("Username", placeholder= 'Username')
+                RegEmail = st.text_input("Email", placeholder= 'Email')
+                RegPassword = st.text_input("Password", placeholder= 'Password',type='password')
+                RegConfirmPassword = st.text_input("Confirm Password", placeholder= 'Confirm Password',type='password')
+                register_button = st.form_submit_button(label='Register')
+    if authentication_status == None:
+        st.warning('Please enter your username and password')
+        with col2:
+            with st.form(key='Register'):
+                st.subheader("Register to JTrader")
+                RegUserName = st.text_input("Username", placeholder= 'Username')
+                RegEmail = st.text_input("Email", placeholder= 'Email')
+                RegPassword = st.text_input("Password", placeholder= 'Password',type='password')
+                RegConfirmPassword = st.text_input("Confirm Password", placeholder= 'Confirm Password',type='password')
+                register_button = st.form_submit_button(label='Register')
+if authentication_status == True:
+    home_page(name)
+    logout = authenticator.logout("Log out","sidebar")

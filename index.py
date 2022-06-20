@@ -1,28 +1,43 @@
 import streamlit as st
-from streamlit_option_menu import option_menu
-from page.visualization_page import *
-from page.dashboard_page import *
-from page.blog_page import *
-from page.export_data_page import *
+import streamlit_authenticator as stauth
+from page.home_page import *
 
-# Header
 st.set_page_config(
    page_title="JTrader: The Journey of Trader"
 )
 
-# Sidebar
-st.sidebar.header('JTrader: The Journey of Trader')
-st.sidebar.subheader('Welcome:')
+names = ['John Smith','Rebecca Briggs','Admin']
+usernames = ['jsmith','rbriggs','admin']
+passwords = ['123','456','admin']
 
-with st.sidebar:
-    selected = option_menu("Navigation Bar", ['Dashboard','Visualization','Export Data','Blog','Log out'], 
-        icons=['columns', 'bar-chart-line','file-earmark-arrow-down', 'newspaper', 'box-arrow-in-left'], menu_icon="cursor", default_index=1)
+hashed_passwords = stauth.Hasher(passwords).generate()
+authenticator = stauth.Authenticate(names,usernames,hashed_passwords,
+    'some_cookie_name','some_signature_key',cookie_expiry_days=30)
 
-if selected == 'Dashboard':
-    dashboard()
-elif selected == 'Visualization':
-    tiles()
-elif selected == 'Export Data':
-    export_data()
-elif selected == 'Blog':
-    blog()
+col1, col2 = st.columns(2)
+
+with col1:
+    name, authentication_status, username = authenticator.login('Login to JTrader','main')
+    if authentication_status == False:
+        st.error('Username/password is incorrect')
+        with col2:
+            with st.form(key='Register'):
+                st.subheader("Register to JTrader")
+                RegUserName = st.text_input("Username", placeholder= 'Username')
+                RegEmail = st.text_input("Email", placeholder= 'Email')
+                RegPassword = st.text_input("Password", placeholder= 'Password',type='password')
+                RegConfirmPassword = st.text_input("Confirm Password", placeholder= 'Confirm Password',type='password')
+                register_button = st.form_submit_button(label='Register')
+    if authentication_status == None:
+        st.warning('Please enter your username and password')
+        with col2:
+            with st.form(key='Register'):
+                st.subheader("Register to JTrader")
+                RegUserName = st.text_input("Username", placeholder= 'Username')
+                RegEmail = st.text_input("Email", placeholder= 'Email')
+                RegPassword = st.text_input("Password", placeholder= 'Password',type='password')
+                RegConfirmPassword = st.text_input("Confirm Password", placeholder= 'Confirm Password',type='password')
+                register_button = st.form_submit_button(label='Register')
+if authentication_status == True:
+    home_page(name)
+    logout = authenticator.logout("Log out","sidebar")
